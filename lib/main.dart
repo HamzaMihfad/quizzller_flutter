@@ -1,6 +1,7 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'quiz_brain.dart';
 
@@ -45,26 +46,54 @@ class _QuizPageState extends State<QuizPage> {
   int index = 0;
 
   void handleAnswer(bool answer) {
-    AudioPlayer audioPlayer;
-    final audioCache = AudioCache();
+    if (index < 6) {
+      AudioPlayer audioPlayer;
+      final audioCache = AudioCache();
 
-    setState(() {
-      userResults.add(
-        Icon(
-          (answer == quizBrain.getAnswer(index) ? Icons.check : Icons.close),
-          color: (answer == quizBrain.getAnswer(index)
-              ? Color(0xff00e676)
-              : Colors.red),
-          size: 40,
-        ),
-      );
-      if (answer == quizBrain.getAnswer(index)) {
-        this.play(audioPlayer, audioCache, 'correct.wav');
-        score++;
-      } else
-        this.play(audioPlayer, audioCache, 'wrong.mp3');
-      index++;
-    });
+      setState(() {
+        userResults.add(
+          Icon(
+            (answer == quizBrain.getAnswer(index) ? Icons.check : Icons.close),
+            color: (answer == quizBrain.getAnswer(index)
+                ? Color(0xff00e676)
+                : Colors.red),
+            size: 40,
+          ),
+        );
+        if (answer == quizBrain.getAnswer(index)) {
+          this.play(audioPlayer, audioCache, 'correct.wav');
+          score++;
+        } else
+          this.play(audioPlayer, audioCache, 'wrong.mp3');
+        index++;
+      });
+    } else {
+      Alert(
+        context: context,
+        title: "Your score is $score/7",
+        desc: "Good Job !",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Play Again!",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              setState(() {
+                userResults = [];
+                score = 0;
+                index = 0;
+              });
+              Navigator.pop(context);
+            },
+            gradient: LinearGradient(colors: [
+              Color.fromRGBO(116, 116, 191, 1.0),
+              Color.fromRGBO(52, 138, 199, 1.0)
+            ]),
+          )
+        ],
+      ).show();
+    }
   }
 
   @override
@@ -83,9 +112,7 @@ class _QuizPageState extends State<QuizPage> {
             //color: Colors.blue,
             child: Center(
               child: Text(
-                (index < 7)
-                    ? quizBrain.getQuestionText(index)
-                    : 'Your Score is: $score/7',
+                (index < 7) ? quizBrain.getQuestionText(index) : 'Replay',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -148,24 +175,6 @@ class _QuizPageState extends State<QuizPage> {
                       ),
                     ),
                   ],
-                ),
-              ),
-            )
-          else
-            Container(
-              margin: EdgeInsets.only(bottom: 150),
-              child: FlatButton(
-                onPressed: () {
-                  setState(() {
-                    userResults = [];
-                    score = 0;
-                    index = 0;
-                  });
-                },
-                child: Icon(
-                  Icons.replay,
-                  color: Color(0xff00e676),
-                  size: 60,
                 ),
               ),
             ),
