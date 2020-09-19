@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'question.dart';
 
 void main() => runApp(Quizzler());
 
@@ -24,28 +25,30 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
 
-  List answers = [ false, false, true, true, false, true, false ];
   List<Icon> userResults = [];
   int score = 0;
-  List<String> questions = [
-    'The African elephant is the largest carnivore on land.',
-    '\'A\' is the most common letter used in the English language.',
-    'Australia is wider than the moon.',
-    'Alaska is the biggest American state in square miles.',
-    'There are five different blood groups.',
-    'The river Seine in Paris is longer than the river Thames in London.',
-    'Monaco is the smallest country in the world.'
+
+  List<Question> questions = [
+    Question(q: 'The African elephant is the largest carnivore on land.', a: false),
+    Question(q: '\'A\' is the most common letter used in the English language.', a: false),
+    Question(q: 'Australia is wider than the moon.', a: true),
+    Question(q: 'Alaska is the biggest American state in square miles.', a: true),
+    Question(q: 'There are five different blood groups.', a: false),
+    Question(q: 'The river Seine in Paris is longer than the river Thames in London.', a: true),
+    Question(q: 'Monaco is the smallest country in the world.', a: false),
   ];
+
+  Question a1;
 
   void handleAnswer(bool answer){
       setState(() {
         userResults.add(
           Icon(
             Icons.check,
-            color: (answer == answers[userResults.length] ? Colors.green : Colors.red),
+            color: (answer == questions[userResults.length].answer ? Colors.green : Colors.red),
           ),
         );
-        if(answer == answers[userResults.length - 1])
+        if(answer == questions[userResults.length - 1].answer)
           score++;
       });
   }
@@ -63,7 +66,7 @@ class _QuizPageState extends State<QuizPage> {
             height: MediaQuery.of(context).size.height * 0.14,
             //color: Colors.blue,
             child: Text(
-            (userResults.length<7) ? questions[userResults.length]: 'Your Score is: $score/7',
+            (userResults.length<7) ? questions[userResults.length].question : 'Your Score is: $score/7',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
